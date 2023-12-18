@@ -66,7 +66,17 @@ int main(int argc, char* argv[])
     read(p_clnt_sock,message,BUF_SIZE); //클라이언트 요청 수신
     //데이터 한번에 송신!( 상품 가격 리스트, 최소, 최대, 평균, 예상 )
     //년도가 2013,2014이면 내가 가진 데이터에서 검색
+    if(message[2]=='1')
+    {
+
+    }
     //년도가 2022이면 c클라에 요청
+    else if(message[2]=='2')
+    {
+
+    }
+    else
+        write(p_clnt_sock,"wrong message!",BUF_SIZE);
 
 
     close(serv_sock);
@@ -85,7 +95,7 @@ void* update_data(void* arg) //데이터 파일 생성
     char cnt[20];
 
     pthread_mutex_lock(&mutx);
-    sprintf(cnt,"data%d.csv",clnt_cnt);
+    sprintf(cnt,"data%d.txt",clnt_cnt);
     FILE* fp=fopen(cnt,"wt"); //데이터 파일 오픈
     if(fp==NULL){
         puts("파일오픈 실패!");
