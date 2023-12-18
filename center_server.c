@@ -7,7 +7,7 @@
 #include <pthread.h>
 
 #define BUF_SIZE 1024
-#define C_CLNT_CNT 11 //서울,경기,대구(경북),부산(울산,경남),광주(전남),전주(전북),대전(충남),세종,충북,제주,강원도
+#define C_CLNT_CNT 10 //서울,경기,대구(경북),부산(울산,경남),광주(전남),전주(전북),대전(충남,세종),충북,제주,강원도
 
 void error_handling(char* msg);
 void* update_data(void* arg);
@@ -64,8 +64,11 @@ int main(int argc, char* argv[])
     p_clnt_sock=accept(serv_sock,(struct sockaddr*)&p_clnt_adr,&p_clnt_adr_sz);
 
     read(p_clnt_sock,message,BUF_SIZE); //클라이언트 요청 수신
-    message[strlen(message)]=0;
-    printf("%s",message);
+    //데이터 한번에 송신!( 상품 가격 리스트, 최소, 최대, 평균, 예상 )
+    //년도가 2013,2014이면 내가 가진 데이터에서 검색
+    //년도가 2022이면 c클라에 요청
+
+
     close(serv_sock);
     return 0;
 }
@@ -78,7 +81,6 @@ exit(1);
 void* update_data(void* arg) //데이터 파일 생성
 {
     int clnt_sock=*((int*)arg);
-    int str_len=0;
     char msg[BUF_SIZE];
     char cnt[20];
 
@@ -91,9 +93,10 @@ void* update_data(void* arg) //데이터 파일 생성
     }
     pthread_mutex_unlock(&mutx);
 
-    while((str_len=read(clnt_sock,msg,sizeof(msg)))>0) //같은 컴퓨터에서 읽어올때는 안깨지는데...ㅠㅠ
+    while(read(clnt_sock,msg,sizeof(msg))>0) //같은 컴퓨터에서 읽어올때는 안깨지는데...ㅠㅠ
     {
-        msg[str_len]=0;
+        // msg[strlen(msg)]=0;
+        // printf("%s",msg);
         fputs(msg,fp);
         memset(msg,0,BUF_SIZE);
     } 
