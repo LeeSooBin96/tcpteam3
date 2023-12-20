@@ -46,43 +46,57 @@ int main(int argc, char* argv[])
    if(listen(serv_sock,5)==-1) error_handling("listen() error");
 
 // //    각 지역 농산물 센터와 연결
-//    for(i=0;i<C_CLNT_CNT;i++)
-//    {
-//         clnt_adr_sz=sizeof(clnt_adr);
-//         clnt_sock=accept(serv_sock,(struct sockaddr*)&clnt_adr,&clnt_adr_sz);
+   for(i=0;i<C_CLNT_CNT;i++)
+   {
+        clnt_adr_sz=sizeof(clnt_adr);
+        clnt_sock=accept(serv_sock,(struct sockaddr*)&clnt_adr,&clnt_adr_sz);
 
-//         pthread_mutex_lock(&mutx);
-//         clnt_socks[clnt_cnt++]=clnt_sock; //각 지역 농산물 센터와 연결해주는 소켓 저장
-//         pthread_mutex_unlock(&mutx); //안겹치게 임계영역 설정
+        pthread_mutex_lock(&mutx);
+        clnt_socks[clnt_cnt++]=clnt_sock; //각 지역 농산물 센터와 연결해주는 소켓 저장
+        pthread_mutex_unlock(&mutx); //안겹치게 임계영역 설정
 
-//         //농산물 센터에서 데이터 받아 저장하기
-//         pthread_create(&t_id,NULL,update_data,(void*)&clnt_sock);
-//         pthread_detach(t_id);
-//         printf("Connected Client %d \n",clnt_cnt); // 접속 확인용
-//    }
+        //농산물 센터에서 데이터 받아 저장하기
+        pthread_create(&t_id,NULL,update_data,(void*)&clnt_sock);
+        pthread_detach(t_id);
+        printf("Connected Client %d \n",clnt_cnt); // 접속 확인용
+   }
 
     // 클라이언트 통신
     p_clnt_adr_sz=sizeof(p_clnt_adr);
     p_clnt_sock=accept(serv_sock,(struct sockaddr*)&p_clnt_adr,&p_clnt_adr_sz);
 
-    char msg[BUF_SIZE];
-    // char ctn[20];
-    // sprintf(ctn,"data%d.txt",cnum);
-    FILE* fp=fopen("data1.txt","r"); //데이터 파일 열기
-    while(1)
-    {
-    fgets(msg,BUF_SIZE,fp);
-    if(feof(fp)) break;
-    read(p_clnt_sock,msg,BUF_SIZE);
-    printf("%s",msg);
-    // strcpy(msg,"2013,111,1234");
-    write(p_clnt_sock,msg,BUF_SIZE); //수신확인메시지
-    memset(msg,0,BUF_SIZE);
-
-    }
+    //파이썬 클라이언트 스레드 통신이 안됨...
+    char message[BUF_SIZE];
+    read(p_clnt_sock,message,BUF_SIZE);
+    printf("%s\n",message); //받은 메시지 확인(년도, 지역, 품목)
+    write(p_clnt_sock,message,strlen(message)); //수신 확인메시지
     
-    // pthread_create(&pt_id,NULL,request,(void*)&p_clnt_sock); //클라이언트 요청 처리 --왜 스레드로 나눴지?
-    // pthread_detach(pt_id);
+    int year=atoi(strtok(message,","));
+    int city=atoi(strtok(NULL,","));
+    int item=atoi(strtok(NULL,","));
+    printf("%d %d %d \n",year,city,item); //년도, 지역코드 , 품목코드
+
+    write(clnt_socks[city-1],"hello",10);
+
+    char cf[20]; sprintf(cf,"data%d.txt",city);
+    printf("%s\n",cf);
+    FILE* fp=fopen(cf,"r");
+    if(fp==NULL){
+        puts("파일오픈 실패!");
+        return NULL;
+    }
+    char list[BUF_SIZE];
+    int str_len;
+    while(1)//수정해야함.
+    {
+        fgets(list,BUF_SIZE,fp); // 파일 데이터 수신에서 오류남...
+        str_len=strlen(list);
+        printf("%s",list);
+        if(feof(fp)) break;
+        //데이터 걸러서 보내야함.
+        write(p_clnt_sock,list,str_len); 
+        memset(list,0,BUF_SIZE);
+    }
 
 //    for(i=0;i<C_CLNT_CNT;i++) close(clnt_socks[i]);
     // close(p_clnt_sock);
@@ -121,73 +135,4 @@ void* update_data(void* arg) //데이터 파일 생성
         memset(msg,0,BUF_SIZE);
     }
     fclose(fp);
-}
-void* request(void* arg)
-{
-    int clnt=*((int*)arg);
-    char msg[BUF_SIZE];
-    read(clnt,msg,BUF_SIZE);
-    printf("%s",msg);
-    write(clnt,msg,BUF_SIZE); //수신확인메시지
-    char* year=strtok(msg,",");
-    char* city=strtok(NULL,",");
-    char* item=strtok(NULL,",");
-    printf("pclient: %s %s %s \n",year,city,item);
-    // memset(msg,0,BUF_SIZE); //각 값 저장했으니 메시지 배열 초기화
-
-    // City cnum; //도시별 번호
-    // if(!strcmp(city,"서울특별시")) cnum=S;
-    // else if(!strcmp(city,"경기도")) cnum=GG;
-    // else if(!strcmp(city,"경상북도")) cnum=GB;
-    // else if(!strcmp(city,"경상남도")) cnum=GN;
-    // else if(!strcmp(city,"전라남도")) cnum=JN;
-    // else if(!strcmp(city,"전라북도")) cnum=JB;
-    // else if(!strcmp(city,"충청남도")) cnum=CN;
-    // else if(!strcmp(city,"충청북도")) cnum=CB;
-    // else if(!strcmp(city,"제주특별자치도")) cnum=JJ;
-    // else if(!strcmp(city,"강원도")) cnum=GW;
-    // else 
-    // {
-    //     puts("없는 도시명이 입력되었습니다!"); return;
-    // }
-    
-    // //파일명 지정
-    // char ctn[20];
-    // sprintf(ctn,"data%d.txt",cnum);
-    // FILE* fp=fopen(ctn,"r"); //데이터 파일 열기
-
-    // char row[BUF_SIZE];
-    // switch(atoi(year)) //년도로 한번 나눔
-    // {
-    //     case 2013:
-    //         printf("2013년이다 \n");
-    //         //내가 가진 파일에서 찾아야함
-    //         fgets(row,BUF_SIZE,fp); //한줄 읽어옴
-    //         fgets(row,BUF_SIZE,fp); //한줄 읽어옴(여기서부터 비교 시작)
-    //         while(!strncmp(row,"2013",4)) //2013이 있는동안
-    //         {
-    //             strtok(row,",");strtok(NULL,","); //조사일 조사지역 건너뜀
-    //             if(!strcmp(strtok(NULL,","),item)) //품목명이 같으면
-    //             {
-    //                 strcat(msg,strtok(NULL,","));
-    //                 strcat(msg,",");
-    //                 strcat(msg,strtok(NULL,","));
-    //             }
-    //             memset(row,0,BUF_SIZE); //row 배열 초기화
-    //             write(clnt,msg,BUF_SIZE); //파이썬 클라이언트에 전송
-    //             read(clnt,msg,BUF_SIZE);
-    //             memset(msg,0,BUF_SIZE); //msg 배열 초기화
-    //             fgets(row,BUF_SIZE,fp); //다음줄 읽어옴
-    //         }
-    //         break;
-    //     case 2014:
-    //         printf("2014년이다 \n");
-    //         //내가 가진 파일에서 찾아야함
-    //         break;
-    //     case 2022:
-    //         printf("2022년이다 \n");
-    //         //c클라에 요청해야함
-    //         break;
-    // }
-    // fclose(fp);
 }
