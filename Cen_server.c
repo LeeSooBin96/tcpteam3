@@ -46,82 +46,86 @@ int main(int argc, char* argv[])
    if(listen(serv_sock,5)==-1) error_handling("listen() error");
 
 // //    각 지역 농산물 센터와 연결
-//    for(i=0;i<C_CLNT_CNT;i++)
-//    {
-//         clnt_adr_sz=sizeof(clnt_adr);
-//         clnt_sock=accept(serv_sock,(struct sockaddr*)&clnt_adr,&clnt_adr_sz);
+   for(i=0;i<C_CLNT_CNT;i++)
+   {
+        clnt_adr_sz=sizeof(clnt_adr);
+        clnt_sock=accept(serv_sock,(struct sockaddr*)&clnt_adr,&clnt_adr_sz);
 
-//         pthread_mutex_lock(&mutx);
-//         clnt_socks[clnt_cnt++]=clnt_sock; //각 지역 농산물 센터와 연결해주는 소켓 저장
-//         pthread_mutex_unlock(&mutx); //안겹치게 임계영역 설정
+        pthread_mutex_lock(&mutx);
+        clnt_socks[clnt_cnt++]=clnt_sock; //각 지역 농산물 센터와 연결해주는 소켓 저장
+        pthread_mutex_unlock(&mutx); //안겹치게 임계영역 설정
 
-//         //농산물 센터에서 데이터 받아 저장하기
-//         pthread_create(&t_id,NULL,update_data,(void*)&clnt_sock);
-//         pthread_detach(t_id);
-//         printf("Connected Client %d \n",clnt_cnt); // 접속 확인용
-//    }
+        //농산물 센터에서 데이터 받아 저장하기
+        pthread_create(&t_id,NULL,update_data,(void*)&clnt_sock);
+        pthread_detach(t_id);
+        printf("Connected Client %d \n",clnt_cnt); // 접속 확인용
+   }
 
     // 클라이언트 통신
     p_clnt_adr_sz=sizeof(p_clnt_adr);
     p_clnt_sock=accept(serv_sock,(struct sockaddr*)&p_clnt_adr,&p_clnt_adr_sz);
+    while(1) //p 클라이언트가 종료하지 않는 이상 서버 종료되지 않음.
+    {
+        //파이썬 클라이언트 스레드 통신이 안됨...
+        char message[BUF_SIZE];
+        read(p_clnt_sock,message,BUF_SIZE);
+        write(p_clnt_sock,message,strlen(message)); //수신 확인메시지
+        printf("%s\n",message); //받은 메시지 확인(년도, 지역, 품목)
 
-    //파이썬 클라이언트 스레드 통신이 안됨...
-    char message[BUF_SIZE];
-    read(p_clnt_sock,message,BUF_SIZE);
-    write(p_clnt_sock,message,strlen(message)); //수신 확인메시지
-    printf("%s\n",message); //받은 메시지 확인(년도, 지역, 품목)
-    
-    char* year=strtok(message,",");
-    char* city=strtok(NULL,",");
-    char* item=strtok(NULL,",");
-    printf("%s %s %s \n",year,city,item); //년도, 지역코드 , 품목코드
+        char* year=strtok(message,",");
+        char* city=strtok(NULL,",");
+        char* item=strtok(NULL,",");
+        printf("%s %s %s \n",year,city,item); //년도, 지역코드 , 품목코드
 
-    //년도에서 2022이면 c클라이언트에 요청해야함
-    // if(atoi(city)==2022)
-    // {
-
-    // }
-    // else //아니면 내가 처리
-    // {   
-        char cf[20]; sprintf(cf,"data%d.txt",atoi(city)); //지역 분리
-        printf("%s\n",cf);
-        FILE* fp=fopen(cf,"r");
-        if(fp==NULL){
-            puts("파일오픈 실패!");
-            return NULL;
-        }
-        char list[BUF_SIZE];
-        char snd_msg[50];
-        int str_len;
-
-        char* lname="규격,조사가격\n";
-        write(p_clnt_sock,lname,strlen(lname));
-        printf("%s \n",lname);
-        while(1)//수정해야함.
-        {
-            fgets(list,BUF_SIZE,fp);
-            if(feof(fp)) break;
-            // fgets(list,BUF_SIZE,fp);
-            list[strlen(list)]=',';
-            // str_len=strlen(list);
-            // printf("%s",list);
-            if(!strncmp(list,year,4)) 
+        //년도에서 2022이면 c클라이언트에 요청해야함
+        if(atoi(year)==2022)
+        {   
+            char buf[BUF_SIZE];
+            write(clnt_socks[atoi(city)-1],item,strlen(item)); //메세지 송신
+            while(read(clnt_socks[atoi(city)-1],buf,BUF_SIZE)) //데이터 읽어오기
             {
-                strtok(list,",");strtok(NULL,",");strtok(NULL,","); //조사일, 조사지역명, 품목명 건너뜀
-                if(!strncmp(strtok(NULL,","),item,3)) //품목코드
-                {
-                    strcpy(snd_msg,strtok(NULL,","));strcat(snd_msg,",");strcat(snd_msg,strtok(NULL,","));strcat(snd_msg,"\n"); //보낼데이터(규격, 가격,\n)
-                    //데이터 걸러서 보내야함.
-                    write(p_clnt_sock,snd_msg,strlen(snd_msg)); 
-                    printf("%s",snd_msg);
-                    memset(snd_msg,0,50);
-                }
+                write(clnt_socks[atoi(city)-1],buf,BUF_SIZE); //수신확인메시지
+                wirte(p_clnt_sock,buf,strlen(buf)); //파이썬클라이언트에게 보내기
+                printf("%s",buf);
             }
-
-            memset(list,0,BUF_SIZE);
         }
-    // }
+        else //아니면 내가 처리
+        {   
+            char cf[20]; sprintf(cf,"data%d.txt",atoi(city)); //지역 분리
+            printf("%s\n",cf);
+            FILE* fp=fopen(cf,"r");
+            if(fp==NULL){
+                puts("파일오픈 실패!");
+                return NULL;
+            }
+            char list[BUF_SIZE];
+            char snd_msg[50];
+            int str_len;
 
+            char* lname="규격,조사가격\n";
+            write(p_clnt_sock,lname,strlen(lname));
+            printf("%s \n",lname);
+            while(1)//수정해야함.
+            {
+                fgets(list,BUF_SIZE,fp);
+                if(feof(fp)) break;
+                list[strlen(list)]=',';
+                if(!strncmp(list,year,4)) 
+                {
+                    strtok(list,",");strtok(NULL,",");strtok(NULL,","); //조사일, 조사지역명, 품목명 건너뜀
+                    if(!strncmp(strtok(NULL,","),item,3)) //품목코드
+                    {
+                        strcpy(snd_msg,strtok(NULL,","));strcat(snd_msg,",");strcat(snd_msg,strtok(NULL,","));strcat(snd_msg,"\n"); //보낼데이터(규격, 가격,\n)
+                        //데이터 걸러서 보내야함.
+                        write(p_clnt_sock,snd_msg,strlen(snd_msg)); 
+                        printf("%s",snd_msg);
+                        memset(snd_msg,0,50);
+                    }
+                }
+                memset(list,0,BUF_SIZE);
+            }
+        }
+    }
 //    for(i=0;i<C_CLNT_CNT;i++) close(clnt_socks[i]);
     // close(p_clnt_sock);
 //    close(serv_sock);
