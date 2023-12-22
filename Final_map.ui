@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="page">
     <widget class="QPushButton" name="pushButton">
@@ -72,7 +72,9 @@
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true"/>
+       <string notr="true">background-color: rgb(231, 230, 234); 
+
+</string>
       </property>
       <property name="currentIndex">
        <number>0</number>
@@ -298,8 +300,7 @@ QPushButton:checked {
 '''
 
 button = QPushButton('Push Me')
-button.setStyleSheet(button_style)
-</string>
+button.setStyleSheet(button_style)</string>
       </property>
       <property name="text">
        <string>서울특별시</string>
@@ -341,6 +342,12 @@ button.setStyleSheet(button_style)</string>
       </property>
       <property name="text">
        <string>경기도</string>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
       </property>
      </widget>
      <widget class="QPushButton" name="pushButton10">
@@ -427,7 +434,9 @@ button.setStyleSheet(button_style)</string>
        <bool>false</bool>
       </property>
       <property name="styleSheet">
-       <string notr="true"/>
+       <string notr="true">background-color: rgb(231, 230, 234); 
+
+</string>
       </property>
       <property name="editable">
        <bool>false</bool>
@@ -448,37 +457,12 @@ button.setStyleSheet(button_style)</string>
       </item>
       <item>
        <property name="text">
-        <string>쌀</string>
+        <string>갓</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>찹쌀</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>콩</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>팥</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>녹두</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>메밀</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>고구마</string>
+        <string>감귤</string>
        </property>
       </item>
       <item>
@@ -488,17 +472,137 @@ button.setStyleSheet(button_style)</string>
       </item>
       <item>
        <property name="text">
+        <string>건고추</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>건블루베리</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>건포도</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>고구마</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>고춧가루</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>깻잎</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>녹두</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>느타리버섯</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>단감</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>당근</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>들깨</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>딸기</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>땅콩</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>레몬</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>무</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>마늘</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>망고</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>멜론</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>메밀</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>미나리</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>배</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>배추</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>양배추</string>
+        <string>방울토마토</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>시금치</string>
+        <string>바나나</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>복숭아</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>붉은고추</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>사과</string>
        </property>
       </item>
       <item>
@@ -508,12 +612,12 @@ button.setStyleSheet(button_style)</string>
       </item>
       <item>
        <property name="text">
-        <string>얼갈이배추</string>
+        <string>새송이버섯</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>갓</string>
+        <string>생강</string>
        </property>
       </item>
       <item>
@@ -523,7 +627,32 @@ button.setStyleSheet(button_style)</string>
       </item>
       <item>
        <property name="text">
-        <string>참외</string>
+        <string>시금치</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>아몬드</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>얼갈이배추</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>열무</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>양배추</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>양파</string>
        </property>
       </item>
       <item>
@@ -533,7 +662,27 @@ button.setStyleSheet(button_style)</string>
       </item>
       <item>
        <property name="text">
-        <string>호박</string>
+        <string>오렌지</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>참다래</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>참외</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>참깨</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>체리</string>
        </property>
       </item>
       <item>
@@ -548,117 +697,7 @@ button.setStyleSheet(button_style)</string>
       </item>
       <item>
        <property name="text">
-        <string>생강</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>고춧가루</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>미나리</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>꺳잎</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>피망(청)</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
         <string>파프리카</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>멜론</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>참깨</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>들깨</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>땅콩</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>느타리버섯</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>팽이버섯</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>새송이버섯</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>호두</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>아몬드</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>사과</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>배</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>복숭아</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>포도</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>감귤</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>단감</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>바나나</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>참다래</string>
        </property>
       </item>
       <item>
@@ -668,37 +707,37 @@ button.setStyleSheet(button_style)</string>
       </item>
       <item>
        <property name="text">
-        <string>오렌지</string>
+        <string>팥</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>방울토마토</string>
+        <string>피망(청)</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>레몬</string>
+        <string>팽이버섯</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>체리</string>
+        <string>포도</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>건포도</string>
+        <string>풋고추</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>건블루베리</string>
+        <string>호두</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>망고</string>
+        <string>호박</string>
        </property>
       </item>
      </widget>
@@ -727,7 +766,7 @@ button.setStyleSheet(button_style)</string>
       <property name="geometry">
        <rect>
         <x>460</x>
-        <y>673</y>
+        <y>650</y>
         <width>58</width>
         <height>16</height>
        </rect>
@@ -743,7 +782,7 @@ button.setStyleSheet(button_style)</string>
       <property name="geometry">
        <rect>
         <x>460</x>
-        <y>650</y>
+        <y>673</y>
         <width>58</width>
         <height>16</height>
        </rect>
