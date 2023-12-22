@@ -20,10 +20,11 @@ pthread_mutex_t mutx;
 int main(int argc, char* argv[])
 {
    //포트 번호 지정
-   argc=2; argv[1]="9105";
+   argc=2; argv[1]="9106";
    int serv_sock, clnt_sock, p_clnt_sock;
    struct sockaddr_in serv_adr,clnt_adr, p_clnt_adr;
    int clnt_adr_sz, p_clnt_adr_sz, i; 
+   char signal[BUF_SIZE];
    
    pthread_t t_id;
    if(argc!=2)
@@ -43,31 +44,26 @@ int main(int argc, char* argv[])
    if(bind(serv_sock,(struct sockaddr*)&serv_adr,sizeof(serv_adr))==-1) error_handling("bind() error");
    if(listen(serv_sock,5)==-1) error_handling("listen() error");
 
-//    각 지역 농산물 센터와 연결
-   for(i=0;i<1;i++) 
+// 각 지역 농산물 센터와 연결 후 13, 14년도 데이터 파일 받기
+   for(i=0;i<C_CLNT_CNT;i++) 
    {
         clnt_adr_sz=sizeof(clnt_adr);
         clnt_sock=accept(serv_sock,(struct sockaddr*)&clnt_adr,&clnt_adr_sz);
 
-        // pthread_mutex_lock(&mutx);
-        // clnt_socks[clnt_cnt++]=clnt_sock; //각 지역 농산물 센터와 연결해주는 소켓 저장
-        // pthread_mutex_unlock(&mutx); //안겹치게 임계영역 설정
-
-        //농산물 센터에서 데이터 받아 저장하기
+        //농산물 센터에서 데이터 받아 저장하기(스레드로 처리)
         pthread_create(&t_id,NULL,update_data,(void*)&clnt_sock);
         pthread_detach(t_id);
    }
 
 //    각 지역 농산물 센터와 재연결
-   for(i=0;i<1;i++) 
+   for(i=0;i<C_CLNT_CNT;i++) 
    {
-        clnt_adr_sz=sizeof(clnt_adr);
         clnt_sock=accept(serv_sock,(struct sockaddr*)&clnt_adr,&clnt_adr_sz);
 
         pthread_mutex_lock(&mutx);
         clnt_socks[i]=clnt_sock; //각 지역 농산물 센터와 연결해주는 소켓 저장
         pthread_mutex_unlock(&mutx); //안겹치게 임계영역 설정
-        printf("Connected Client %d \n",clnt_cnt); // 접속 확인용
+        printf("Connected Client... \n",clnt_cnt); // 접속 확인용
    }
 
     while(1) //p 클라이언트가 종료하지 않는 이상 서버 종료되지 않음.
@@ -161,14 +157,15 @@ void* update_data(void* arg) //데이터 파일 생성
     char msg[BUF_SIZE+1];
     char cnt[20];
 
-    pthread_mutex_lock(&mutx);
-    sprintf(cnt,"data%d.txt",++clnt_cnt);
+    read(clnt_sock,msg,3);
+    write(clnt_sock,"connecting...\n",15); //수신확인
+
+    sprintf(cnt,"data%s.txt",msg); //지역별 파일에 저장(01:서울 02:경기 03:경북, 04:경남, 05:전남, 06:전북, 07:충남, 08:충북, 09:제주, 10:강원)
     FILE* fp=fopen(cnt,"w"); //데이터 파일 오픈 및 생성
     if(fp==NULL){
         puts("파일오픈 실패!");
         return NULL;
     }
-    pthread_mutex_unlock(&mutx); //여기까지는 문제 없음(전역변수 건들여서 임계영역)
 
     int str_len;
 

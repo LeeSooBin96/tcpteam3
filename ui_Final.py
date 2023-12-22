@@ -218,14 +218,12 @@ class WindowClass (QMainWindow, form_class):
 
         # 서버로부터 데이터 수신
         Data = self.client_socket.recv(1000000)
-        Data.decode('UTF-8')
 
         with open('file.csv','wb') as f:
             while Data:
                 print(Data)
                 f.write(Data)
                 Data = self.client_socket.recv(1000000)
-                Data.decode('UTF-8')
 
         # 데이터 불러오기
         data = pd.read_csv('file.csv')
@@ -241,7 +239,6 @@ class WindowClass (QMainWindow, form_class):
             self.pushButton8.setDisabled(True)
             self.pushButton9.setDisabled(True)
             self.pushButton10.setDisabled(True)
-            self.comboBox.setCurrentIndex(0)
             pass
         else:
             # 데이터 최대, 최소, 평균, 예상가격
@@ -283,7 +280,6 @@ class WindowClass (QMainWindow, form_class):
 
         # 종료 소켓
         self.closesock()
-        f.close()
 
     def closesock(self):
         self.client_socket.close()
