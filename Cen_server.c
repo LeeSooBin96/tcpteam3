@@ -11,6 +11,7 @@
 
 void error_handling(char* msg); 
 void* update_data(void* arg);
+void opnfile(char* cf,int cnum);
 
 int clnt_cnt=0; //연결된 지역 농산물 센터 수 저장
 int clnt_socks[C_CLNT_CNT]; //지역 농산물 센터 연결 소자
@@ -45,7 +46,7 @@ int main(int argc, char* argv[])
    if(listen(serv_sock,5)==-1) error_handling("listen() error");
 
 // 각 지역 농산물 센터와 연결 후 13, 14년도 데이터 파일 받기
-   for(i=0;i<C_CLNT_CNT;i++) 
+   for(i=0;i<1;i++) 
    {
         clnt_adr_sz=sizeof(clnt_adr);
         clnt_sock=accept(serv_sock,(struct sockaddr*)&clnt_adr,&clnt_adr_sz);
@@ -56,7 +57,7 @@ int main(int argc, char* argv[])
    }
 
 //    각 지역 농산물 센터와 재연결
-   for(i=0;i<C_CLNT_CNT;i++) 
+   for(i=0;i<1;i++) 
    {
         clnt_sock=accept(serv_sock,(struct sockaddr*)&clnt_adr,&clnt_adr_sz);
 
@@ -101,7 +102,7 @@ int main(int argc, char* argv[])
         }
         else //아니면 내가 처리
         {   
-            char cf[20]; sprintf(cf,"data%d.txt",atoi(city)); //지역 분리
+            char cf[20]; opnfile(cf,atoi(city));
             FILE* fp2=fopen(cf,"r");
             if(fp2==NULL){
                 puts("파일오픈 실패!");
@@ -167,7 +168,7 @@ void* update_data(void* arg) //데이터 파일 생성
         return NULL;
     }
 
-    int str_len;
+    int str_len; //길이 이용하고 싶다아...
 
     while((str_len=read(clnt_sock,msg,BUF_SIZE))>0)//수정해야함.
     {
@@ -180,4 +181,40 @@ void* update_data(void* arg) //데이터 파일 생성
     fclose(fp);
     close(clnt_sock);
     return;
+}
+void opnfile(char* cf,int cnum)
+{
+    switch(cnum)
+    {
+        case 1:
+            strcpy(cf,"data01.txt");
+            break;
+        case 2:
+            strcpy(cf,"data02.txt");
+            break;
+        case 3:
+            strcpy(cf,"data03.txt");
+            break;
+        case 4:
+            strcpy(cf,"data04.txt");
+            break;
+        case 5:
+            strcpy(cf,"data05.txt");
+            break;
+        case 6:
+            strcpy(cf,"data06.txt");
+            break;
+        case 7:
+            strcpy(cf,"data07.txt");
+            break;
+        case 8:
+            strcpy(cf,"data08.txt");
+            break;
+        case 9:
+            strcpy(cf,"data09.txt");
+            break;
+        case 10:
+            strcpy(cf,"data10.txt");
+            break;
+    }
 }
